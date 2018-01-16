@@ -51,5 +51,25 @@ public class CameraTest {
         verify(memoryCard).write(eq(data), any() );
     }
 
+    @Test
+    public void ifDataIsBeingWrittenPowerOffDoesNotPowerDownSensor() {
+        camera.powerOn();
+        verify(sensor).powerUp();
 
+        byte[] data = "1234567890".getBytes();
+        when(sensor.readData()).thenReturn(data);
+
+//        ArgumentCaptor<WriteCompleteListener> listener = ArgumentCaptor.forClass(WriteCompleteListener.class);
+
+        camera.pressShutter();
+        verify(sensor).readData();
+        verify(memoryCard).write(eq(data), any()); //listener.capture() );
+
+        camera.powerOff();
+        verifyNoMoreInteractions(sensor);
+
+//        listener.writeComplete();
+//        camera.powerOff();
+//        verify(sensor).powerDown();
+    }
 }
