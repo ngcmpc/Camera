@@ -1,37 +1,55 @@
 package com.develogical.camera;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import static org.mockito.Mockito.*;
 
 public class CameraTest {
+
+    Camera camera;
+    Sensor sensor;
+    MemoryCard memoryCard;
+
+    @Before
+    public void prepareCamera() {
+        sensor = mock(Sensor.class);
+        memoryCard = mock(MemoryCard.class);
+        camera = new Camera(sensor, memoryCard);
+    }
+
     @Test
     public void switchingTheCameraOnPowersUpTheSensor() {
-        Sensor sensor = mock(Sensor.class);
-        Camera camera = new Camera(sensor);
-
         camera.powerOn();
         verify(sensor).powerUp();
     }
 
     @Test
     public void switchingTheCameraOffPowersDownTheSensor() {
-        Sensor sensor = mock(Sensor.class);
-        Camera camera = new Camera(sensor);
-
         camera.powerOff();
         verify(sensor).powerDown();
     }
 
     @Test
     public void pressingTheShutterWhenThePowerIsOffDoesNothing() {
-        Sensor sensor = mock(Sensor.class);
-        Camera camera = new Camera(sensor);
-
         camera.powerOff();
         verify(sensor).powerDown();
         camera.pressShutter();
         verifyNoMoreInteractions(sensor);
     }
+
+    @Test
+    public void pressingTheShutterWhenThePowerIsOnCopiesDataFromSensor() {
+        camera.powerOn();
+        verify(sensor).powerUp();
+
+        byte[] data = "1234567890".getBytes();
+        when(sensor.readData()).thenReturn(data);
+
+        camera.pressShutter();
+
+        verify(memoryCard).write(eq(data), any() );
+    }
+
+
 }
