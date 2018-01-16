@@ -7,9 +7,9 @@ import static org.mockito.Mockito.*;
 
 public class CameraTest {
 
-    Camera camera;
-    Sensor sensor;
-    MemoryCard memoryCard;
+    private Camera camera;
+    private Sensor sensor;
+    private MemoryCard memoryCard;
 
     @Before
     public void prepareCamera() {
